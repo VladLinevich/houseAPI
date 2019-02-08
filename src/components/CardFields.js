@@ -54,7 +54,7 @@ class ImageView extends React.Component {
 
                 {images.length > 1 ? <div className='change'>
                                         {images.map((el, index) => {
-                                            return <Radio checked={this.state.selectedImg == index}
+                                            return <Radio checked={Number(this.state.selectedImg) === Number(index)}
                                                           onChange={this.handleChangeImage}
                                                           value={index}
                                                           name="image" 

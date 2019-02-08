@@ -102,7 +102,7 @@ class Main extends Component {
             }}
           >
           {this.state.templates.map((el, index) => {
-            return <MenuItem value={index}>Template number {el.id}</MenuItem>
+            return <MenuItem key={index} value={index}>Template number {el.id}</MenuItem>
           })}
           </Select>
         </FormControl>
