@@ -1,10 +1,43 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import 'typeface-roboto';
+
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
+
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+
+import Paper from '@material-ui/core/Paper'
+
+import { withStyles } from '@material-ui/core/styles';
 
 import Card from './Card';
 
-import { housesURL, templatesURL } from './../constants'
+import { housesURL, templatesURL } from './../constants';
 import { mockTemplatesList, mockData } from './../mockData';
+
+const styles = theme => ({
+  root: {
+    flexGrow: 1,
+    maxWidth: 1200,
+    margin: '0 auto',
+    paddingTop: 20
+  },
+  select: {
+    width: '100%',
+    maxWidth: 200,
+    marginBottom: 20
+  },
+  paper : {
+    width: 1200/3 - 50,
+    height: 340,
+    marginBottom: 20,
+    padding: 10
+  }
+});
 
 class Main extends Component {
   
@@ -55,45 +88,104 @@ class Main extends Component {
   setCurrentTemplate = event => this.setState({ currentTemplate: event.target.value })
 
   renderTemplateSelect(){
-    return(
-      <select onChange={this.setCurrentTemplate}>
-        {this.state.templates.map((el, index) => {
-          return <option value={index}>Template number {el.id}</option>
-        })}
-      </select>
+
+    let {classes} = this.props;
+
+    return (
+      <FormControl margin='dense' className={classes.select} >
+          <Select
+            value={this.state.currentTemplate}
+            onChange={this.setCurrentTemplate}
+            inputProps={{
+              name: 'template-name',
+              id: 'change-template',
+            }}
+          >
+          {this.state.templates.map((el, index) => {
+            return <MenuItem value={index}>Template number {el.id}</MenuItem>
+          })}
+          </Select>
+        </FormControl>
     )
   }
 
   renderCards(){
     let {templates, currentTemplate, houseData} = this.state;
     let tmpl =  templates[currentTemplate].template;
+    let { classes } = this.props;
 
     return (
-      <>
-        {this.renderTemplateSelect()}
-        {houseData.map((data, indx) => <Card template={tmpl} key={indx} data={data}/> )}
-      </>
+      <Grid item xs={12}>
+        <Grid container >
+
+          <Grid item xs={12} align='center'>
+            {this.renderTemplateSelect()}
+          </Grid>
+
+          <Grid container justify="space-between" alignItems='flex-start'  spacing={8} >
+            {houseData.map((data, indx) => {
+              return (
+                <Grid item key={indx}>
+                  <Paper  className={classes.paper}>
+                    <Card  template={tmpl}  data={data}/>
+                  </Paper>
+                </Grid>
+              )
+            })}
+          </Grid>
+        
+        </Grid>
+      </Grid>
     )
   }
 
-  renderNoDataComponent = () => (
-    <span>We can`t load data =( try later
-      <a href="#" onClick={this.loadTestData}> maby  load test data?</a>
-    </span>
+  infoTitlesRender = () => (
+    <Grid item xs={12}>
+      <Typography component='h5' 
+                  variant="h5" 
+                  align='center' 
+                  gutterBottom>
+        {this.state.noData ? <>We can`t load data =( try later.
+                                <Link href="#" onClick={this.loadTestData}> Maby  load test data?</Link>
+                              </> 
+                          : 'Loading...'}
+      </Typography>
+    </Grid>
   )
+
 
 
   render(){
 
-    let {readyToRender, noData} = this.state;
-    
+    let {readyToRender} = this.state;
+    const { classes } = this.props;
+
     return(
       <>
-      <h2>main</h2>
-      {!readyToRender ? <h2>{noData ? this.renderNoDataComponent() : 'Loading...'}</h2> : this.renderCards()}
+      <Grid container className={classes.root}>
+
+        <Grid item xs={12}>
+          <Typography component="h1" 
+                      variant="h2" 
+                      align='center' 
+                      gutterBottom>
+            Houses API
+          </Typography>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Grid container className={classes.cardsWrapper}>
+
+            {!readyToRender ? this.infoTitlesRender() : this.renderCards()}
+
+          </Grid>
+        </Grid>
+      </Grid>
+      
+      
       </>
     )
   }
 }
 
-export default Main
+export default withStyles(styles)(Main)
